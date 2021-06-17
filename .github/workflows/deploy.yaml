@@ -1,0 +1,49 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  preparation:
+    name: prepare build environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: preparer
+        id: preparer
+        run: |
+          sha=$(git rev-parse --short HEAD)
+          ts=$(date +%s)
+          echo "::set-output name=tag::${sha}-${ts}"
+    outputs:
+      tag: ${{ steps.preparer.outputs.tag }}
+
+  build:
+    name: build
+    needs: [preparation]
+    runs-on: ubuntu-latest
+    steps:
+      - name: builder
+        run: echo Hello build ${{ needs.preparation.outputs.tag }}!
+
+  # unit tests??
+
+  staging:
+    name: deploy to staging
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: deployer
+        run: echo I am deploying to staging ${{ needs.preparation.outputs.tag }}!
+
+  # integration tests??
+
+  production:
+    name: deploy to production 
+    needs: [staging]
+    runs-on: ubuntu-latest
+    steps:
+      - name: emil
+        run: echo I am deploying to production ${{ needs.preparation.outputs.tag }}!
