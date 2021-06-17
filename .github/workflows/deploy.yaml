@@ -44,6 +44,8 @@ jobs:
     name: production
     needs: [preparation, staging]
     runs-on: ubuntu-latest
+    environment: 
+      name: production
     steps:
       - name: deploy
         run: echo I am deploying to production ${{ needs.preparation.outputs.tag }}!
