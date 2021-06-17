@@ -6,7 +6,7 @@ on:
 
 jobs:
   preparation:
-    name: prepare build environment
+    name: preparation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,6 +20,8 @@ jobs:
     outputs:
       tag: ${{ steps.preparer.outputs.tag }}
 
+  # unit tests??
+
   build:
     name: build
     needs: [preparation]
@@ -28,22 +30,20 @@ jobs:
       - name: builder
         run: echo Hello build ${{ needs.preparation.outputs.tag }}!
 
-  # unit tests??
-
   staging:
-    name: deploy to staging
-    needs: [build, preparation]
+    name: staging
+    needs: [preparation, build]
     runs-on: ubuntu-latest
     steps:
-      - name: deployer
+      - name: deploy
         run: echo I am deploying to staging ${{ needs.preparation.outputs.tag }}!
 
   # integration tests??
 
   production:
-    name: deploy to production 
-    needs: [staging, preparation]
+    name: deploy to production
+    needs: [preparation, staging]
     runs-on: ubuntu-latest
     steps:
-      - name: emil
+      - name: deploy
         run: echo I am deploying to production ${{ needs.preparation.outputs.tag }}!
