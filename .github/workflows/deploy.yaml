@@ -41,7 +41,7 @@ jobs:
   # integration tests??
 
   production:
-    name: deploy to production
+    name: production
     needs: [preparation, staging]
     runs-on: ubuntu-latest
     steps:
