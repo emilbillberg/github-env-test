@@ -32,7 +32,7 @@ jobs:
 
   staging:
     name: deploy to staging
-    needs: [build]
+    needs: [build, preparation]
     runs-on: ubuntu-latest
     steps:
       - name: deployer
@@ -42,7 +42,7 @@ jobs:
 
   production:
     name: deploy to production 
-    needs: [staging]
+    needs: [staging, preparation]
     runs-on: ubuntu-latest
     steps:
       - name: emil
