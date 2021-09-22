@@ -25,7 +25,7 @@ jobs:
         id: image
         run: |
           sha=$(git rev-parse --short HEAD)
-          ts=$(date +%s)
+          ts=$(date -u +%Y-%m-%dT%H-%M-%S%Z)
           echo "::set-output name=tag::${sha}-${ts}"
       - name: Build & push
         run: |
@@ -45,6 +45,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Pull & push
         run: |
-          echo docker pull REGISTRY/REPOSITORY:${{ needs.staging.outputs.tag }}
-          echo docker tag REGISTRY/REPOSITORY:${{ needs.staging.outputs.tag }} REGISTRY/REPOSITORY:prd-${{ needs.staging.outputs.tag }}
-          echo docker push REGISTRY/REPOSITORY:prod-${{ needs.staging.outputs.tag }}
+          echo docker pull REGISTRY/REPOSITORY:stg-${{ needs.staging.outputs.tag }}
+          echo docker tag REGISTRY/REPOSITORY:stg-${{ needs.staging.outputs.tag }} REGISTRY/REPOSITORY:prd-${{ needs.staging.outputs.tag }}
+          echo docker push REGISTRY/REPOSITORY:prd-${{ needs.staging.outputs.tag }}
