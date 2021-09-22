@@ -14,6 +14,7 @@ jobs:
       - name: preparer
         id: preparer
         run: |
+          ls -la
           sha=$(git rev-parse --short HEAD)
           ts=$(date +%s)
           echo "::set-output name=tag::${sha}-${ts}"
