@@ -6,50 +6,56 @@ on:
 
 jobs:
   preparation:
-    name: preparation
+    name: Preparation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: preparer
-        id: preparer
+      - name: Create image tag
+        id: image_tag
         run: |
           ls -la
           sha=$(git rev-parse --short HEAD)
           ts=$(date +%s)
           echo "::set-output name=tag::${sha}-${ts}"
     outputs:
-      tag: ${{ steps.preparer.outputs.tag }}
+      tag: ${{ steps.image_tag.outputs.tag }}
 
   tests:
-    name: tests
-    # needs: [preparation]
+    name: Tests
+    needs: [preparation]
     runs-on: ubuntu-latest
     steps:
-      - name: tests
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Tests
         run: |
           ls -la
           echo Running tests!
 
   staging:
-    name: staging
+    name: Staging
     needs: [preparation, tests]
     runs-on: ubuntu-latest
     steps:
-      - name: build & push
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build & push
         run: |
           ls -la
           echo docker build  --build-arg GITHUB_TOKEN=$GITHUB_TOKEN -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }} .
           echo docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }}
 
   production:
-    name: production
+    name: Production
     needs: [preparation, staging]
     runs-on: ubuntu-latest
     environment: 
       name: production
     steps:
-      - name: pull & push
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Pull & push
         run: |
           ls -la
           echo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }}
