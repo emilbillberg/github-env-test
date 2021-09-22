@@ -20,25 +20,26 @@ jobs:
     outputs:
       tag: ${{ steps.preparer.outputs.tag }}
 
-  # unit tests??
-
-  build:
-    name: build
-    needs: [preparation]
+  tests:
+    name: tests
+    # needs: [preparation]
     runs-on: ubuntu-latest
     steps:
-      - name: builder
-        run: echo Hello build ${{ needs.preparation.outputs.tag }}!
+      - name: tests
+        run: |
+          ls -la
+          echo Running tests!
 
   staging:
     name: staging
-    needs: [preparation, build]
+    needs: [preparation, tests]
     runs-on: ubuntu-latest
     steps:
-      - name: deploy
-        run: echo I am deploying to staging ${{ needs.preparation.outputs.tag }}!
-
-  # integration tests??
+      - name: build & push
+        run: |
+          ls -la
+          echo docker build  --build-arg GITHUB_TOKEN=$GITHUB_TOKEN -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }} .
+          echo docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }}
 
   production:
     name: production
@@ -47,5 +48,9 @@ jobs:
     environment: 
       name: production
     steps:
-      - name: deploy
-        run: echo I am deploying to production ${{ needs.preparation.outputs.tag }}!
+      - name: pull & push
+        run: |
+          ls -la
+          echo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }}
+          echo docker tag $ECR_REGISTRY/$ECR_REPOSITORY:${{ needs.preparation.outputs.tag }} $ECR_REGISTRY/$ECR_REPOSITORY:prod-${{ needs.preparation.outputs.tag }}
+          echo docker push $ECR_REGISTRY/$ECR_REPOSITORY:prod-${{ needs.preparation.outputs.tag }}
